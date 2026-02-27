@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Resonance | School Event</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJdZf2mOzXgW+qOPvBae4T6/Q7A+00X5r52rA+C9+z/p93A5n6U7X9/J4vLw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #E0E7FF; /* Light text color */
+            /* Custom dark background pattern mimicking the provided image */
+            background-color: #0b0c1f;
+            background-image: radial-gradient(circle at center, rgba(171, 107, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%), 
+                              url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><pattern id="p" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%234A235A" opacity="0.4"/></pattern></defs><rect width="100" height="100" fill="url(%23p)"/></svg>');
+            background-size: 100px 100px;
+        }
+
+        .section-container {
+            max-width: 1024px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 4rem 1.5rem;
+        }
+        
+        /* Custom gradient for the main button */
+        .register-btn {
+            background: linear-gradient(90deg, #6d28d9, #9333ea, #a855f7);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.7);
+        }
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.9);
+        }
+
+        /* Society carousel card styling - ADJUSTED TO INDIGO/PURPLE SCHEME */
+        .society-carousel-card {
+            width: calc(50% - 20px); /* 50% width minus 20px total horizontal margin (10px left + 10px right) */
+            min-width: 200px; 
+            height: 150px;
+            background-color: #0d0d21; /* Dark background */
+            border: 2px solid #a78bfa; /* Changed from yellow to light purple border */
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #a78bfa; /* Changed from yellow text to light purple */
+            text-shadow: 0 0 8px rgba(167, 139, 250, 0.5); /* Matching shadow */
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            flex-shrink: 0; /* Prevent shrinking in flex container */
+            margin: 0 10px; /* Spacing between cards */
+            opacity: 0.8;
+        }
+
+        /* --- UPDATED ACTIVE GLOW TO MATCH THEME --- */
+        .society-carousel-card.active {
+            background-color: #1e1b4b; /* Darker on active */
+            border-color: #d8b4fe; /* Bright Purple/Fuchsia border on active */
+            color: #d8b4fe;
+            box-shadow: 0 0 25px rgba(216, 180, 254, 0.9); /* Bright Purple/Fuchsia glow */
+            transform: scale(1.05);
+            opacity: 1;
+        }
+
+        .society-carousel-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.7);
+        }
+
+        /* Carousel Navigation Arrows */
+        .carousel-arrow {
+            color: #a78bfa;
+            background: transparent;
+            border: none;
+            padding: 0.5rem 0.2rem; 
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 10;
+            font-size: 2rem; 
+            font-weight: 900;
+            line-height: 1; 
+            position: absolute;
+        }
+        .carousel-arrow:hover {
+            color: #fff;
+        }
+        
+        /* Carousel track styling */
+        #society-carousel-wrapper {
+            background-color: #0d0d21; 
+            border-radius: 16px;
+            padding: 1rem 0; 
+            margin: 0 auto;
+            border: 1px solid #312e81;
+        }
+
+        /* Flip Card Styling - VERTICAL RECTANGLE */
+        .flip-card {
+            background-color: transparent;
+            /* Default mobile width */
+            width: 100%; 
+            max-width: 300px; 
+            height: 350px; 
+            perspective: 1000px; 
+            flex-shrink: 0; 
+            min-width: 200px; 
+        }
+        
+        /* Flexbox override for the competition container */
+        #competition-container {
+             /* Increased max-width of the container to prevent wrapping if 3 cards are present */
+             max-width: 1024px; /* Use full section width */
+             margin: 0 auto; /* Center the container */
+             /* Removed padding: 0 1rem; to rely on the parent section-container's padding */
+        }
+        
+        /* Mobile: Allow wrapping below the medium breakpoint (md:) so they stack nicely on phones */
+        @media (max-width: 767px) {
+            #competition-container {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                max-width: 400px;
+                padding: 0 1.5rem; /* Match section padding */
+            }
+            .flip-card {
+                margin: 0 auto;
+            }
+        }
+        
+        /* Tablet/Desktop: Enforce no-wrap and calculated width for perfect fit */
+        @media (min-width: 768px) {
+            #competition-container {
+                flex-wrap: nowrap; /* CRITICAL: Prevent wrapping onto new lines */
+                justify-content: center; /* Center the row of cards */
+            }
+            .flip-card {
+                /* Use flex-basis to ensure equal spacing for three cards, accounting for the parent's gap-4 (1rem/16px) */
+                flex-basis: calc(33.33% - 12px); /* A slightly safer calculation */
+                min-width: 200px; /* Don't squish too much */
+                max-width: 350px; /* Allow growing up to a reasonable size */
+            }
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            border-radius: 12px;
+            overflow: hidden; 
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #1e1b4b; /* Darker card background */
+            border: 1px solid #312e81; /* Indigo border */
+            box-sizing: border-box; 
+        }
+
+        .flip-card-front {
+            color: #fde047;
+            background-color: #1e1b4b;
+        }
+
+        .flip-card-back {
+            background-color: #312e81; /* Slightly lighter for back */
+            color: #E0E7FF;
+            transform: rotateY(180deg);
+            text-align: center; /* Center back content */
+            padding: 1.5rem;
+            justify-content: flex-start; 
+            overflow-y: auto; 
+        }
+        
+        /* Ensure details text is prominent on the back */
+        .flip-card-back h5 {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #fde047; /* Highlighted title */
+            margin-bottom: 0.5rem;
+        }
+
+        .flip-card-back p {
+            font-size: 1rem; /* Slightly larger text */
+            line-height: 1.6;
+            color: #c7d2fe;
+            margin-top: 1rem; /* Spacing */
+            text-align: left; /* Keep long text left-aligned for readability */
+        }
+        
+        .flip-card-back button {
+            margin-top: auto; 
+            align-self: center; 
+        }
+
+        /* Hide scrollbar for carousel but allow scrolling */
+        #society-carousel::-webkit-scrollbar {
+            display: none;
+        }
+        #society-carousel {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Custom logo styling */
+        .event-logo-navbar {
+            height: 30px; /* Adjust as needed */
+            width: auto;
+            /* No margin needed as 'MR' text is removed */
+        }
+
+        .event-logo-hero {
+            height: 120px; /* Adjust as needed */
+            width: auto;
+            margin-bottom: 24px;
+        }
+
+    </style>
+    
+</head>
+<body class="antialiased min-h-screen">
+
+    <!-- NAVBAR: 'MR' text removed, only logo remains in the brand area -->
+    <nav class="p-4 backdrop-blur-sm bg-black/30 border-b border-indigo-900/50">
+        <div class="section-container flex justify-between items-center py-2 px-0">
+            <div class="flex items-center">
+                <!-- LOGO in Navbar -->
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAC9CAYAAABvcAPEAAAAGmVYSWZNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAABPAdecAAAABc1JHQgCuzhzpAAAABHNCSVQICAgIfAhkiAAAIABJREFUeJzs3XmYVcWdP/5P1dnP3Zfe941uutmbfbMRRFExbu2SiNE4g0tiYraZZL75jXeeZExmxmhmNCYyWUycaJKOWSSKophWUEC87DQ09L7f23337ez1+wM1Ao2CMQFJvR54+KPPqVPnXOh+U6fqUwAURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVF/H9C57gBFUX/fliypd6xrXTfb7fL4x8Kjh15/61tdbW1gnut+URRF/SVowKIo6pwIBAJsUzF3/bQZU5pdXt8MTTF8Pp/v2NhoaO/zL77y3Bf+34MHz3UfKYqiPiwasCiK+ptZ39zMXXb77c7iCvtVRUX+i3RTmc/w4Pe4v..." alt="Message Resonance Logo" class="event-logo-navbar">
+            </div>
+            <a href="#register" class="text-sm font-semibold text-white hover:text-indigo-400 transition duration-300">Register Now</a>
+        </div>
+    </nav>
+
+    <!-- HEADER/HERO SECTION -->
+    <header id="home" class="h-[80vh] flex flex-col justify-center items-center text-center p-8 pt-20">
+        
+        <div class="mb-6">
+            <!-- LOGO in Hero Section -->
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAC9CAYAAABvcAPEAAAAGmVYSWZNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAABPAdecAAAABc1JHQgCuzhzpAAAABHNCSVQICAgIfAhkiAAAIABJREFUeJzs3XmYVcWdP/5P1dnP3Zfe941uutmbfbMRRFExbu2SiNE4g0tiYraZZL75jXeeZExmxmhmNCYyWUycaJKOWSSKophWUEC87DQ09L7f23337ez1+wM1Ao2CMQFJvR54+KPPqVPnXOh+U6fqUwAURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVEURVF/H9C57gBFUX/fliypd6xrXTfb7fL4x8Kjh15/61tdbW1gnut+URRF/SVowKIo6pwIBAJsUzF3/bQZU5pdXt8MTTF8Pp/v2NhoaO/zL77y3Bf+34MHz3UfKYqiPiwasCiK+ptZ39zMXXb77c7iCvtVRUX+i3RTmc/w4Pe4v..." alt="Message Resonance Logo" class="event-logo-hero">
+        </div>
+        <h2 class="text-5xl md:text-7xl font-extrabold mb-4 tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-300">
+            MESSAGE RESONANCE
+        </h2>
+        <p class="text-xl text-indigo-300 mb-10 max-w-xl">
+            Where Innovation, Intellect, and Expression Converge.
+        </p>
+        
+        <a id="register" href="https://forms.gle/YOUR_GOOGLE_FORM_ID_HERE" target="_blank" class="register-btn text-white font-bold py-3 px-8 rounded-full shadow-lg uppercase tracking-wider text-lg">
+            <i class="fas fa-edit mr-2"></i> Register for Event
+        </a>
+    </header>
+
+    <main class="py-12">
+        
+        <!-- ABOUT SECTION -->
+        <section id="about" class="section-container">
+            <h3 class="text-4xl font-bold mb-8 text-center text-indigo-400 border-b border-indigo-900 pb-3">
+                About Message Resonance
+            </h3>
+            <div class="bg-indigo-900/30 p-8 rounded-xl shadow-2xl border border-indigo-800/50">
+                <p class="text-lg leading-relaxed text-indigo-200">
+                    Welcome to **Message Resonance**, an exciting inter-society event dedicated to fostering collaboration, innovation, and competitive spirit. This platform brings together students from diverse academic and extracurricular fields—**STEM, Business, Literature, and Debates**—providing a unique opportunity to challenge conventional thinking, showcase talent, and engage in high-level intellectual competition. Join us as we explore the resonance of great ideas across all disciplines!
+                </p>
+            </div>
+        </section>
+
+        <!-- KEY DATES SECTION -->
+        <section id="dates" class="section-container">
+            <h3 class="text-4xl font-bold mb-8 text-center text-indigo-400 border-b border-indigo-900 pb-3">
+                Key Dates
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
+                
+                <div class="bg-purple-900/30 p-6 rounded-xl border border-purple-800/50 transition duration-300 hover:bg-purple-900/50">
+                    <i class="fas fa-calendar-alt text-4xl text-purple-400 mb-3"></i>
+                    <p class="text-xl font-semibold mb-1">Phase 1 Selections</p>
+                    <p class="text-3xl font-extrabold text-purple-200">October 26, 2024</p>
+                </div>
+
+                <div class="bg-indigo-900/30 p-6 rounded-xl border border-indigo-800/50 transition duration-300 hover:bg-indigo-900/50">
+                    <i class="fas fa-bullhorn text-4xl text-indigo-400 mb-3"></i>
+                    <p class="text-xl font-semibold mb-1">Final Event</p>
+                    <p class="text-3xl font-extrabold text-indigo-200">November 9, 2024</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPETITIONS SECTION -->
+        <section id="information" class="section-container">
+            <h3 class="text-4xl font-bold mb-8 text-center text-indigo-400 border-b border-indigo-900 pb-3">
+                Information & Competitions
+            </h3>
+
+            <!-- Society Carousel -->
+            <div id="society-carousel-wrapper" class="relative flex items-center justify-center w-full max-w-lg mx-auto px-4 mb-16">
+                <button onclick="scrollCarousel(-1)" class="carousel-arrow left-0 md:-left-8 z-10">
+                    &lt;
+                </button>
+                <div id="society-carousel" class="flex overflow-x-auto snap-x snap-mandatory py-4 scroll-smooth w-full">
+                    <!-- Carousel cards injected by JavaScript -->
+                </div>
+                <button onclick="scrollCarousel(1)" class="carousel-arrow right-0 md:-right-8 z-10">
+                    &gt;
+                </button>
+            </div>
+            
+            <div class="my-16 max-w-lg mx-auto">
+                <hr class="border-0 h-1 bg-gradient-to-r from-transparent via-purple-500/70 to-transparent shadow-purple-900 shadow-[0_0_15px_rgba(147,51,234,0.8)] rounded-full">
+            </div>
+
+            <!-- Competition Details Container -->
+            <div id="competition-container" class="flex md:flex-nowrap justify-center items-stretch gap-4 min-h-[350px] mx-auto">
+                <p id="placeholder-text" class="w-full text-center text-indigo-300 text-lg p-10 self-center">
+                    Select a society above to view its hosted competitions.
+                </p>
+            </div>
+        </section>
+        
+        <!-- CONTACT SECTION -->
+        <section id="contact" class="section-container">
+            <h3 class="text-4xl font-bold mb-8 text-center text-indigo-400 border-b border-indigo-900 pb-3">
+                Contact Details
+            </h3>
+            
+            <div class="bg-indigo-900/30 p-8 rounded-xl shadow-2xl border border-indigo-800/50 max-w-3xl mx-auto">
+                <div class="space-y-4 mb-8">
+                    <p class="text-lg text-indigo-200">
+                        <i class="fas fa-microchip text-indigo-400 w-6"></i> 
+                        <span class="font-semibold">STEM Society:</span> Jane Doe - <a href="mailto:jane.doe@school.edu" class="underline hover:text-indigo-300">jane.doe@school.edu</a>
+                    </p>
+                    <p class="text-lg text-indigo-200">
+                        <i class="fas fa-chart-line text-indigo-400 w-6"></i> 
+                        <span class="font-semibold">Business Society:</span> John Smith - <a href="mailto:john.smith@school.edu" class="underline hover:text-indigo-300">john.smith@school.edu</a>
+                    </p>
+                    <p class="text-lg text-indigo-200">
+                        <i class="fas fa-book-open text-indigo-400 w-6"></i> 
+                        <span class="font-semibold">Literature Society:</span> Ali Khan - <a href="mailto:ali.khan@school.edu" class="underline hover:text-indigo-300">ali.khan@school.edu</a>
+                    </p>
+                    <p class="text-lg text-indigo-200">
+                        <i class="fas fa-gavel text-indigo-400 w-6"></i> 
+                        <span class="font-semibold">Debates Society:</span> Fatima Hassan - <a href="mailto:fatima.hassan@school.edu" class="underline hover:text-indigo-300">fatima.hassan@school.edu</a>
+                    </p>
+                </div>
+
+                <div class="text-center mt-8">
+                    <a href="https://instagram.com/MESSAGERESONANCE_PAGE" target="_blank" class="bg-pink-600 hover:bg-pink-700
+                    text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 uppercase tracking-wider">
+                        <i class="fab fa-instagram mr-2"></i> Follow us on Instagram
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center p-8 bg-black/50 border-t border-indigo-900/50">
+        <p class="text-sm text-indigo-400">&copy; 2024 Message Resonance Event. All rights reserved.</p>
+    </footer>
+
+    <script>
+    // --- Data Model ---
+    const SOCIETIES = [
+        { name: "STEM", icon: "fas fa-flask", color: "text-red-400", bg: "bg-red-900", border: "border-red-700" },
+        { name: "Business", icon: "fas fa-chart-pie", color: "text-green-400", bg: "bg-green-900", border: "border-green-700" },
+        { name: "Literature", icon: "fas fa-feather-alt", color: "text-yellow-400", bg: "bg-yellow-900", border: "border-yellow-700" },
+        { name: "Debates", icon: "fas fa-balance-scale", color: "text-blue-400", bg: "bg-blue-900", border: "border-blue-700" },
+    ];
+
+    const COMPETITIONS = {
+        "STEM": [
+            {
+                title: "Circuit Sprint",
+                frontText: "Fast-Paced Electronics Challenge",
+                backDetails: "A hands-on race to design, assemble, and debug complex electronic circuits under time pressure. Tests knowledge of fundamental components and practical skills.",
+                maxParticipants: "Teams of 2",
+                prizes: "Rs. 15,000 + Tech Gadgets"
+            },
+            {
+                title: "Tech Rush",
+                frontText: "Rapid Technology Integration",
+                backDetails: "Teams must quickly analyze a real-world scenario (e.g., environmental monitoring or logistics) and propose a technology stack and solution architecture. Focus on speed and feasibility.",
+                maxParticipants: "Teams of 3",
+                prizes: "Rs. 12,000 + Internship Opportunities"
+            }
+        ],
+        "Business": [
+            {
+                title: "Market Mavericks",
+                frontText: "Innovative Market Entry Strategy",
+                backDetails: "Competitors will receive a disruptive product idea and must develop a complete go-to-market strategy, including target demographics, pricing, and distribution channels.",
+                maxParticipants: "Teams of 3",
+                prizes: "Rs. 20,000 + Mentorship Sessions"
+            },
+            {
+                title: "Brand Heist",
+                frontText: "Corporate Crisis Management Simulation",
+                backDetails: "A simulation where teams manage a sudden brand crisis (e.g., PR disaster, product recall). Requires quick thinking, stakeholder communication, and damage control proposals.",
+                maxParticipants: "Teams of 2",
+                prizes: "Rs. 15,000 + Industry Vouchers"
+            }
+        ],
+        "Literature": [
+            {
+                title: "Literary Duet",
+                frontText: "Collaborative Writing Challenge",
+                backDetails: "Pairs must collaboratively write a short piece of fiction, poetry, or non-fiction, rotating between writers every 15 minutes. Focus is on seamless narrative transition and style consistency.",
+                maxParticipants: "Teams of 2",
+                prizes: "Rs. 8,000 + Featured Publication"
+            },
+            {
+                title: "Story Telling",
+                frontText: "Verbal Narrative Performance",
+                backDetails: "An individual event where participants must deliver a captivating original or adapted story without notes. Judged on vocal expression, stage presence, and narrative flow.",
+                maxParticipants: "Individual",
+                prizes: "Rs. 7,000 + Book Coupons"
+            },
+            {
+                title: "Shayr Kon?",
+                frontText: "Urdu/Poetry Recitation Contest",
+                backDetails: "Participants recite classical or contemporary Urdu or regional language poetry. Emphasis on correct pronunciation (Makharij), meter (Beher), and emotional delivery.",
+                maxParticipants: "Individual",
+                prizes: "Rs. 5,000 + Poetry Anthology"
+            }
+        ],
+        "Debates": [
+            {
+                title: "The Debating Chamber",
+                frontText: "British Parliamentary Debate Tournament",
+                backDetails: "The standard British Parliamentary format. Teams of two debate complex global issues with preparation time limited to 15 minutes per motion.",
+                maxParticipants: "Teams of 2",
+                prizes: "Rs. 18,000 + Trophy"
+            },
+            {
+                title: "The Detective Cell",
+                frontText: "Forensic and Investigative Debate",
+                backDetails: "Teams analyze a fictional, evidence-based crime scenario and present an argument for a specific conclusion (prosecution or defense). Requires logical inference and evidence synthesis.",
+                maxParticipants: "Teams of 3",
+                prizes: "Rs. 15,000 + Certificates"
+            }
+        ]
+    };
+
+    let activeSociety = '';
+    let autoScrollInterval = null;
+    const SCROLL_INTERVAL_MS = 2000; // Scroll every 2 seconds
+
+    // --- Utility Functions ---
+
+    /**
+     * Starts the automatic scrolling interval.
+     */
+    function startAutoScroll() {
+        if (autoScrollInterval) return; // Prevent multiple intervals
+        autoScrollInterval = setInterval(() => {
+            scrollCarousel(1);
+        }, SCROLL_INTERVAL_MS);
+    }
+
+    /**
+     * Clears the automatic scrolling interval.
+     */
+    function stopAutoScroll() {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+    }
+
+    /**
+     * Converts an array of competition objects into a set of flip-card HTML strings.
+     * @param {Array<Object>} comps - The array of competition objects.
+     * @returns {string} - The concatenated HTML for the flip cards.
+     */
+    function generateCompetitionCards(comps) {
+        if (!comps || comps.length === 0) {
+            return '<p class="w-full text-center text-indigo-300 text-lg p-10 self-center">No competitions listed yet for this society.</p>';
+        }
+
+        return comps.map(comp => `
+            <div class="flip-card transition duration-500 ease-in-out" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <i class="fas fa-trophy text-5xl mb-4 text-fuchsia-400"></i>
+                        <h4 class="text-2xl font-extrabold mb-1 text-yellow-400">${comp.title}</h4>
+                        <p class="text-sm text-indigo-200">${comp.frontText}</p>
+                    </div>
+                    <div class="flip-card-back">
+                        <h5 class="text-xl font-bold">${comp.title}</h5>
+                        <p class="text-sm text-indigo-200 flex-grow mt-3">${comp.backDetails}</p>
+                        
+                        <div class="mt-4 w-full text-center border-t border-indigo-700 pt-3">
+                            <p class="text-sm font-semibold text-yellow-400 mb-1">Participants: <span class="text-white">${comp.maxParticipants}</span></p>
+                            <p class="text-lg font-bold text-fuchsia-400">${comp.prizes}</p>
+                        </div>
+                        
+                        <a href="#register" class="register-btn text-white text-sm font-bold py-2 px-4 mt-4 rounded-full shadow-md hover:shadow-lg transition">Register</a>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    /**
+     * Updates the competition section based on the selected society.
+     * @param {string} societyName - The name of the society (e.g., 'STEM').
+     */
+    function updateCompetitionSection(societyName) {
+        const container = document.getElementById('competition-container');
+        const cardsHTML = generateCompetitionCards(COMPETITIONS[societyName]);
+        
+        container.innerHTML = cardsHTML;
+        container.style.flexWrap = 'wrap'; 
+        
+        // Update active class for carousel cards
+        document.querySelectorAll('.society-carousel-card').forEach(card => {
+            if (card.getAttribute('data-society') === societyName) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+        });
+        
+        activeSociety = societyName;
+    }
+
+    /**
+     * Scrolls the carousel by one card width, implementing the infinite loop.
+     * @param {number} direction - 1 for next, -1 for previous.
+     */
+    function scrollCarousel(direction) {
+        const carousel = document.getElementById('society-carousel');
+        const numOriginalItems = SOCIETIES.length;
+        if (carousel.children.length < numOriginalItems) return;
+
+        // Calculate card width plus margin
+        const firstCard = carousel.children[0];
+        const cardWidth = firstCard.offsetWidth;
+        const style = window.getComputedStyle(firstCard);
+        const margin = parseInt(style.marginLeft) + parseInt(style.marginRight);
+        const totalScrollDistance = cardWidth + margin;
+        
+        // Calculate the maximum scroll position for the original items
+        const originalScrollEnd = (numOriginalItems) * totalScrollDistance;
+
+        // --- Infinite Loop Logic (Forward) ---
+        if (direction > 0) {
+            // Check if we are about to scroll past the original content (into the clones)
+            // If current scroll position + one scroll step is beyond the boundary
+            if (carousel.scrollLeft + totalScrollDistance >= originalScrollEnd - totalScrollDistance / 2) {
+                // Instantly jump back to the start (scrollLeft = 0)
+                carousel.scrollLeft = 0; 
+                // Then perform the smooth scroll from the start
+                setTimeout(() => {
+                    carousel.scrollBy({ left: totalScrollDistance, behavior: 'smooth' });
+                }, 10);
+                return;
+            }
+        } 
+        
+        // --- Infinite Loop Logic (Backward) ---
+        else if (direction < 0) {
+            // Check if we are at the very beginning
+            if (carousel.scrollLeft <= totalScrollDistance / 2) {
+                // Instantly jump to the start of the cloned content
+                carousel.scrollLeft = originalScrollEnd; 
+                 // Then perform the smooth scroll backwards from the end
+                 setTimeout(() => {
+                    carousel.scrollBy({ left: -totalScrollDistance, behavior: 'smooth' });
+                 }, 10);
+                 return;
+            }
+        }
+
+        // Default smooth scroll
+        carousel.scrollBy({
+            left: direction * totalScrollDistance,
+            behavior: 'smooth'
+        });
+    }
+
+
+    /**
+     * Initializes the carousel by injecting society cards, cloning them for the loop, 
+     * and setting up auto-scroll with hover listeners.
+     */
+    function initializeCarousel() {
+        const carousel = document.getElementById('society-carousel');
+        
+        // 1. Create original cards
+        SOCIETIES.forEach(society => {
+            const card = document.createElement('div');
+            card.className = 'society-carousel-card snap-center transition duration-300';
+            card.setAttribute('data-society', society.name);
+            card.onclick = () => updateCompetitionSection(society.name);
+            card.innerHTML = `
+                <div class="flex flex-col items-center">
+                    <i class="${society.icon} text-3xl mb-2"></i>
+                    <span class="text-lg">${society.name}</span>
+                </div>
+            `;
+            carousel.appendChild(card);
+        });
+        
+        // 2. Clone all original cards to enable the infinite loop effect
+        const numOriginalItems = SOCIETIES.length;
+        const originalCards = Array.from(carousel.children); 
+        
+        for (let i = 0; i < numOriginalItems; i++) {
+            const society = SOCIETIES[i];
+            const clonedCard = originalCards[i].cloneNode(true);
+            clonedCard.classList.remove('active');
+            // Re-wire the click handler for the cloned card
+            clonedCard.onclick = () => updateCompetitionSection(society.name);
+            carousel.appendChild(clonedCard);
+        }
+
+        // 3. Start auto-scroll and set up pause on hover
+        startAutoScroll();
+        const wrapper = document.getElementById('society-carousel-wrapper');
+        wrapper.addEventListener('mouseenter', stopAutoScroll);
+        wrapper.addEventListener('mouseleave', startAutoScroll);
+
+
+        // 4. Auto-select the first society on load
+        if (SOCIETIES.length > 0) {
+            updateCompetitionSection(SOCIETIES[0].name);
+        }
+    }
+
+    // --- Initialization ---
+    window.onload = initializeCarousel;
+
+</script>
